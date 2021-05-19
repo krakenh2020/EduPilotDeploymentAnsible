@@ -1,0 +1,7 @@
+---
+
+- name: "Apply role {{ role }} to hosts: {{ hosts }}"
+  hosts: "{{ hosts }}"
+  roles:
+  - role: "{{ role }}"
+    become: yes

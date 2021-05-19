@@ -1,0 +1,27 @@
+# {{ ansible_managed }}
+
+
+[Unit]
+Description=KRAKEN Aries service
+ConditionPathExists={{ path_binary }}
+After=network.target
+ 
+[Service]
+Type=simple
+User=nginx
+Group=nginx
+
+Restart=on-failure
+
+WorkingDirectory={{ path_workdir }}
+ExecStart={{ path_binary }} start
+
+SyslogIdentifier=KrakenAgent
+
+[Service]
+{% for key, value in agent_env.items() %}
+Environment="{{ key }}={{ value }}"
+{% endfor %}
+
+[Install]
+WantedBy=multi-user.target

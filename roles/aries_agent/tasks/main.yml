@@ -1,0 +1,67 @@
+---
+
+- name: Setup TLS via certbot
+  include_role:
+    name: certbot
+  vars: 
+    certbot_prefix: "{{ prefix }}"
+    certbot_certs:
+    - domains:
+        - "{{ nginx_domain }}"
+    certbot_admin_email: "{{ admin_email }}"
+    certbot_create_if_missing: yes
+    certbot_create_method: standalone
+    certbot_auto_renew: true
+    certbot_auto_renew_minute: 42
+    certbot_auto_renew_hour: 6
+    certbot_create_standalone_stop_services:
+    - nginx
+
+- name: Create workdir for agent
+  ansible.builtin.file:
+    path: "{{ path_workdir }}"
+    state: directory
+    owner: nginx
+    group: nginx
+
+- name: Create agent systemd service
+  template:
+    src: templates/agent-service.j2
+    dest: "/etc/systemd/system/kraken-agent-{{ agent_context }}.service"
+    mode: "ug+rx"
+
+- name: Enable agent systemd service
+  systemd:
+    daemon_reload: yes
+    name: "kraken-agent-{{ agent_context }}.service"
+    enabled: yes
+    state: started
+
+
+
+- name: Setup vhost
+  include_role: 
+    name: nginx
+  vars:
+    remove_default_vhost: True
+    nginx_prefix: "{{ prefix }}.{{ agent_context }}-agent"
+    vhosts:
+    - listen: "80"
+      server_name: "{{ nginx_domain }}"
+      server_name_redirect: "www.{{ nginx_domain }}"
+      return: "301 https://{{ nginx_domain }}$request_uri"
+      filename: "{{ nginx_domain }}.redirect.conf"
+      state: "present"
+
+    - listen: "443 ssl http2"
+      server_name: "{{ nginx_domain }}"
+      access_log: "/var/log/nginx/{{ nginx_prefix }}.default.access.log"
+      error_log: "/var/log/nginx/{{ nginx_prefix }}.default.error.log"
+      tls: True
+      tls_certificate: "/etc/letsencrypt/live/{{ nginx_domain }}/fullchain.pem"
+      tls_certificate_key: "/etc/letsencrypt/live/{{ nginx_domain }}/privkey.pem"
+      state: "present"
+      extra_parameters: |
+        location / {
+          proxy_pass http://localhost:{{ agent_port }};
+        }

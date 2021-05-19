@@ -17,3 +17,22 @@ frontend_domain: "kraken-edu.{{ nginx_zone }}"
 api_path: "/opt/kraken-edu-api"
 api_domain: "kraken-edu-api.{{ nginx_zone }}"
 
+
+agent_path: "/opt/aries-agent"
+agent_version: "v0.1.6"
+agent_path_agent: "{{ agent_path }}/build/bin/aries-agent-rest"
+agent_path_webhook: "{{ agent_path }}/build/bin/webhook-server"
+
+agent_student_workdir: "/opt/kraken-edu-student-agent"
+agent_student_domain: "kraken-edu-student.{{ nginx_zone }}"
+agent_student_port_api: 8082
+agent_student_port_inbound: 8081
+agent_student_port_webhook: 8083
+
+agent_university_workdir: "/opt/kraken-edu-university-agent"
+agent_university_domain: "kraken-edu-university.{{ nginx_zone }}"
+agent_university_port_api: 9082
+agent_university_port_inbound: 9081
+agent_university_port_webhook: 8093
+
+agent_sidetree: "http://sidetree-mock.demo:48326/sidetree/0.0.1/identifiers"

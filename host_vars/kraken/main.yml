@@ -1,0 +1,19 @@
+---
+
+
+tls_enabled: true
+nginx_domain: kraken.iaik.tugraz.at
+nginx_webroot: /opt/kraken-mainpage
+nginx_zone: iaik.tugraz.at
+
+prefix: "kraken-edu"  # for logs etc.
+
+
+admin_email: "smore@iaik.tugraz.at"  # for certbot
+
+frontend_path: "/opt/kraken-edu-frontend"
+frontend_domain: "kraken-edu.{{ nginx_zone }}"
+
+api_path: "/opt/kraken-edu-api"
+api_domain: "kraken-edu-api.{{ nginx_zone }}"
+

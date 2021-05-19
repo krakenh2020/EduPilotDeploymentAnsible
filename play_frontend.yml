@@ -1,0 +1,91 @@
+---
+
+
+- name: "Setup Edu Pilot Web Frontend"
+  hosts: servers
+  become: yes
+  tasks:
+
+  - name: Pull frontend repo
+    git:
+      repo: "https://github.com/krakenh2020/EduPilotFrontend.git"
+      dest: "{{ frontend_path }}"
+      version: master
+      recursive: no
+      force: yes
+
+  - name: Fix app-shell URLs
+    ansible.builtin.shell: |
+      APPSHELL="./vendor/toolkit/packages/app-shell/src/app-shell.js"
+      sed -i -e 's:datenschutz.tugraz.at/erklaerung:github.com/site/privacy:g' $APPSHELL
+      sed -i -e 's:www.tugraz.at/en/about-this-page/legal-notice/:krakenh2020.eu/legal-notice:g' $APPSHELL
+      sed -i -e 's:www.tugraz.at/ueber-diese-seite/impressum/:krakenh2020.eu/legal-notice:g' $APPSHELL
+      sed -i -e 's:it-support@tugraz.at:smore@tugraz.at:g' $APPSHELL
+    args:
+      chdir: "{{ frontend_path }}"
+
+  - name: Fix git config
+    ansible.builtin.shell: |
+      git remote rm origin
+      git remote add origin https://github.com/krakenh2020/EduPilotFrontend.git
+    args:
+      chdir: "{{ frontend_path }}"
+
+  - name: Install yarn using npm
+    community.general.npm:
+      name: yarn
+      global: yes
+
+  - name: Install (yarn) and build (rollup) frontend
+    ansible.builtin.shell: |
+      yarn install
+      yarn rollup -c --environment BUILD:kraken-iaik
+    args:
+      chdir: "{{ frontend_path }}"
+
+  - name: Setup TLS via certbot
+    include_role:
+      name: certbot
+    vars: 
+      certbot_prefix: "{{ prefix }}"
+      certbot_certs:
+      - domains:
+          - "{{ frontend_domain }}"
+      certbot_admin_email: "{{ admin_email }}"
+      certbot_create_if_missing: yes
+      certbot_create_method: standalone
+      certbot_auto_renew: true
+      certbot_auto_renew_minute: 42
+      certbot_auto_renew_hour: 6
+      certbot_create_standalone_stop_services:
+      - nginx
+
+  - name: Setup nginx vhost
+    include_role:
+      name: nginx
+    vars: 
+      remove_default_vhost: True
+      nginx_prefix: "{{ prefix }}"
+      service_domain: "{{ frontend_domain }}"
+      vhosts:
+      - listen: "80"
+        server_name: "{{ service_domain }}"
+        return: "301 https://{{ service_domain }}$request_uri"
+        filename: "{{ service_domain }}.redirect.conf"
+        state: "present"
+
+      - listen: "443 ssl http2"
+        server_name: "{{ service_domain }}"
+        access_log: "/var/log/nginx/{{ nginx_prefix }}.{{ service_domain }}.access.log"
+        error_log: "/var/log/nginx/{{ nginx_prefix }}.{{ service_domain }}.error.log"
+        tls: True
+        tls_certificate: "/etc/letsencrypt/live/{{ service_domain }}/fullchain.pem"
+        tls_certificate_key: "/etc/letsencrypt/live/{{ service_domain }}/privkey.pem"
+        root: "{{ frontend_path }}/dist"
+        index: "vc4sm-frontend.html"
+        state: "present"
+        extra_parameters: |
+          location ~* /(en|de)/ {
+            try_files /vc4sm-frontend.html =404;
+          }
+

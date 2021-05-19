@@ -1,0 +1,100 @@
+---
+
+
+- name: "Setup Edu Pilot API"
+  hosts: servers
+  become: yes
+  tasks:
+
+  - name: Pull API repo
+    git:
+      repo: "https://github.com/krakenh2020/EduPilotBackend.git"
+      dest: "{{ api_path }}"
+      version: master
+#      recursive: no
+      force: yes
+
+  - name: Fix git URLs
+    ansible.builtin.shell: |
+      git config --global url."https://gitlab.tugraz.at/".insteadOf "git@gitlab.tugraz.at:"
+    args:
+      chdir: "{{ api_path }}"
+
+  - name: Generate demo keys
+    ansible.builtin.shell: |
+      cd docker-dev && ./generate_demo_keys.sh
+    args:
+      chdir: "{{ api_path }}"
+
+  - name: Copy PHP Config 1
+    ansible.builtin.copy:
+      src: templates/php-ini-overrides.ini
+      dest: /etc/php/7.3/fpm/conf.d/99-overrides.ini
+
+  - name: Copy PHP Config 2
+    ansible.builtin.copy:
+      src: templates/php-fpm-overrides.conf
+      dest: /etc/php/7.3/fpm/pool.d/z-overrides.conf
+
+  - name: Install PHP Dependencies using composer
+    ansible.builtin.shell: |
+      composer install
+    args:
+      chdir: "{{ api_path }}"
+
+  - name: Setup TLS via certbot
+    include_role:
+      name: certbot
+    vars: 
+      certbot_prefix: "{{ prefix }}"
+      certbot_certs:
+      - domains:
+          - "{{ api_domain }}"
+      certbot_admin_email: "{{ admin_email }}"
+      certbot_create_if_missing: yes
+      certbot_create_method: standalone
+      certbot_auto_renew: true
+      certbot_auto_renew_minute: 42
+      certbot_auto_renew_hour: 6
+      certbot_create_standalone_stop_services:
+      - nginx
+
+  - name: Setup nginx vhost
+    include_role:
+      name: nginx
+    vars: 
+      remove_default_vhost: True
+      nginx_prefix: "{{ prefix }}"
+      service_domain: "{{ api_domain }}"
+      vhosts:
+      - listen: "80"
+        server_name: "{{ service_domain }}"
+        return: "301 https://{{ service_domain }}$request_uri"
+        filename: "{{ service_domain }}.redirect.conf"
+        state: "present"
+
+      - listen: "443 ssl http2"
+        server_name: "{{ service_domain }}"
+        access_log: "/var/log/nginx/{{ nginx_prefix }}.{{ service_domain }}.access.log"
+        error_log: "/var/log/nginx/{{ nginx_prefix }}.{{ service_domain }}.error.log"
+        tls: True
+        tls_certificate: "/etc/letsencrypt/live/{{ service_domain }}/fullchain.pem"
+        tls_certificate_key: "/etc/letsencrypt/live/{{ service_domain }}/privkey.pem"
+        root: "{{ api_path }}/public"
+        index: "index.php"
+        state: "present"
+        extra_parameters: |
+          if (!-e $request_filename) {
+            rewrite ^.*$ /index.php last;
+          }
+
+          location ~ (\.php|/)$ {
+            fastcgi_pass localhost:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PHP_VALUE "error_log=/var/log/nginx/application_php_errors.log";
+            fastcgi_buffers 16 16k;
+            fastcgi_buffer_size 32k;
+            include fastcgi_params;
+          }
+

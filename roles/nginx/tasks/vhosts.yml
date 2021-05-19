@@ -1,0 +1,41 @@
+---
+
+- name: Remove default nginx vhost config file (if configured).
+  file:
+    path: "/etc/nginx/conf.d/default.conf"
+    state: absent
+  when: remove_default_vhost
+  notify: restart nginx
+
+- name: Ensure nginx_vhost_path exists.
+  file:
+    path: "/etc/nginx/conf.d/"
+    state: directory
+  notify: reload nginx
+
+- name: Add managed vhost config files.
+  template:
+    src: "vhost.j2"
+    dest: "/etc/nginx/conf.d/{{ item.filename|default(item.server_name.split(' ')[0] ~ '.conf') }}"
+    force: yes
+    owner: root
+    group: root
+    mode: 0644
+  when: item.state|default('present') != 'absent'
+  with_items: "{{ vhosts }}"
+  notify: reload nginx
+
+- name: Remove managed vhost config files.
+  file:
+    path: "/etc/nginx/conf.d/{{ item.filename|default(item.server_name.split(' ')[0] ~ '.conf') }}"
+    state: absent
+  when: item.state|default('present') == 'absent'
+  with_items: "{{ vhosts }}"
+  notify: reload nginx
+
+- name: Remove legacy vhosts.conf file.
+  file:
+    path: "/etc/nginx/conf.d/vhosts.conf"
+    state: absent
+  notify: reload nginx
+

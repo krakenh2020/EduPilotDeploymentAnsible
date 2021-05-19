@@ -1,0 +1,28 @@
+---
+
+- name: Keep system up to date (apt)
+  become: yes
+  apt:
+    update_cache: yes
+    upgrade: full
+  when: ansible_os_family == "Debian"
+
+- name: Install ansible module dependencies
+  become: yes
+  apt:
+    name: python3-lxml
+    state: latest
+  when: ansible_os_family == "Debian"
+
+- name: install packages
+  become: yes
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ packages }}"
+
+- name: install grml zshrc
+  become: yes
+  get_url:
+    url: https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
+    dest: "/etc/zsh/grml.zshrc"

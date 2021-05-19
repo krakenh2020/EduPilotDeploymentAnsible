@@ -1,0 +1,23 @@
+---
+- name: Check if certificate already exists.
+  stat:
+    path: /etc/letsencrypt/live/{{ cert_item.domains | first }}/cert.pem
+  register: letsencrypt_cert
+
+- name: Stop services to allow certbot to generate a cert.
+  service:
+    name: "{{ item }}"
+    state: stopped
+  when: not letsencrypt_cert.stat.exists
+  with_items: "{{ certbot_create_standalone_stop_services }}"
+
+- name: Generate new certificate if one doesn't exist.
+  shell: "certbot certonly --standalone --noninteractive --agree-tos --email {{ cert_item.email | default(certbot_admin_email) }} -d {{ cert_item.domains | join(',') }}"
+  when: not letsencrypt_cert.stat.exists
+
+- name: Start services after cert has been generated.
+  service:
+    name: "{{ item }}"
+    state: started
+  when: not letsencrypt_cert.stat.exists
+  with_items: "{{ certbot_create_standalone_stop_services }}"

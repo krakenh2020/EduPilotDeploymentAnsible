@@ -1,0 +1,36 @@
+---
+
+- name: Install Certbot
+  package:
+    name: python3-certbot-nginx
+    state: latest
+    update_cache: yes
+
+- include_tasks: create-cert-standalone.yml
+  with_items: "{{ certbot_certs | default([]) }}"
+  when:
+    - certbot_create_if_missing
+    - certbot_create_method == 'standalone'
+  loop_control:
+    loop_var: cert_item
+
+# - import_tasks: renew-cron.yml
+#  when: certbot_auto_renew
+
+- name: Copy certbot systemd renew timer
+  template:
+    src: "renew-timer.j2"
+    dest: "/etc/systemd/system/{{ certbot_prefix | default('')}}certbot-renew.timer"
+    mode: "ug+rx"
+
+- name: Copy certbot systemd renew service
+  template:
+    src: "renew-service.j2"
+    dest: "/etc/systemd/system/{{ certbot_prefix | default('')}}certbot-renew.service"
+    mode: "ug+rx"
+
+- name: Enable systemd timer for certbot
+  systemd:
+    daemon_reload: yes
+    name: "{{ certbot_prefix | default('')}}certbot-renew.timer"
+    enabled: yes

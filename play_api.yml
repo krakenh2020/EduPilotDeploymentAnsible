@@ -36,6 +36,11 @@
       src: templates/php-fpm-overrides.conf
       dest: /etc/php/7.3/fpm/pool.d/z-overrides.conf
 
+  - name: Remove old composer.lock
+    file:
+      path: "{{ api_path }}/composer.lock"
+      state: absent
+
   - name: Install PHP Dependencies using composer
     ansible.builtin.shell: |
       composer install

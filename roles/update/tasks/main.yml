@@ -1,10 +1,16 @@
 ---
 
-- name: apt update/upgrade
+- name: apt-get update & aptitude full-upgrade
   apt:
     autoclean: yes
     update_cache: yes
-    upgrade: "{{ upgrade|default('safe') }}"
+    upgrade: "full"
+
+- name: apt-get dist-upgrade
+  apt:
+    autoclean: yes
+    update_cache: no
+    upgrade: "dist"
 
 #- name: Install ansible module dependencies
 #  apt:
@@ -13,7 +19,7 @@
 
 - name: Make sure necessary scripts are installed
   apt:
-    name: ['debian-goodies', 'lsof', 'molly-guard', 'python-pip']
+    name: ['apt-transport-https', 'debian-goodies', 'lsof', 'molly-guard', 'python-pip']
     state: present
 
 - name: Check if reboot needed

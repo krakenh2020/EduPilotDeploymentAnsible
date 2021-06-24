@@ -1,0 +1,7 @@
+---
+
+- name: "Updating all vms ..."
+  hosts: servers
+  become: yes
+  roles:
+  - role: update

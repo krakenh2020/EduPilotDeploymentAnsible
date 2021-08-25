@@ -41,6 +41,19 @@
       path: "{{ api_path }}/composer.lock"
       state: absent
 
+  - name: Write build info
+    ansible.builtin.shell: |
+      gitsha1=$(git rev-parse HEAD)
+      gitsha2=$(git rev-parse --short HEAD)
+      I="$gitsha2 ($(TZ=Europe/Vienna date -Iminutes ))"
+      U="https://github.com/krakenh2020/EduPilotBackend/tree/$gitsha1"
+      echo $I
+      echo $U 
+      echo "APP_BUILDINFO=\"$I\"" >> .env
+      echo "APP_BUILDINFO_URL=\"$U\"" >> .env
+    args:
+      chdir: "{{ api_path }}"
+
   - name: Install PHP Dependencies using composer
     ansible.builtin.shell: |
       composer install

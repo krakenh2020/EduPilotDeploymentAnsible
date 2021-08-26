@@ -35,7 +35,7 @@
     daemon_reload: yes
     name: "kraken-agent-{{ agent_context }}.service"
     enabled: yes
-    state: started
+    state: restarted
 
 
 

@@ -50,11 +50,11 @@
   become: yes
   vars:
     agent_context: "student"
-    agent_port: "{{ agent_student_port_api }}"
+    agent_port: "{{ agent_student_port_inbound }}"
     agent_env:
       ARIESD_API_HOST: "localhost:{{ agent_student_port_api }}"
       ARIESD_INBOUND_HOST: "http@localhost:{{ agent_student_port_inbound }}"
-      ARIESD_INBOUND_HOST_EXTERNAL: "http@http://{{ agent_student_domain }}"
+      ARIESD_INBOUND_HOST_EXTERNAL: "http@https://{{ agent_student_domain }}"
       ARIESD_WEBHOOK_URL: "https://enybebk8mydni.x.pipedream.net"
       ARIESD_DEFAULT_LABEL: "{{ agent_context }}-agent"
       ARIESD_DATABASE_TYPE: "leveldb"
@@ -79,11 +79,11 @@
   become: yes
   vars:
     agent_context: "university"
-    agent_port: "{{ agent_university_port_api }}"
+    agent_port: "{{ agent_university_port_inbound }}"
     agent_env:
       ARIESD_API_HOST: "localhost:{{ agent_university_port_api }}"
       ARIESD_INBOUND_HOST: "http@localhost:{{ agent_university_port_inbound }}"
-      ARIESD_INBOUND_HOST_EXTERNAL: "http@http://{{ agent_university_domain }}"
+      ARIESD_INBOUND_HOST_EXTERNAL: "http@https://{{ agent_university_domain }}"
       ARIESD_WEBHOOK_URL: "https://enybebk8mydni.x.pipedream.net"
       ARIESD_DEFAULT_LABEL: "{{ agent_context }}-agent"
       ARIESD_DATABASE_TYPE: "leveldb"

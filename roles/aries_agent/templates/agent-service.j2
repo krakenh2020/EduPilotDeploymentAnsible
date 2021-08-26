@@ -2,7 +2,7 @@
 
 
 [Unit]
-Description=KRAKEN Aries service
+Description=KRAKEN {{ agent_context | capitalize }} Aries service
 ConditionPathExists={{ path_binary }}
 After=network.target
  
@@ -16,7 +16,7 @@ Restart=on-failure
 WorkingDirectory={{ path_workdir }}
 ExecStart={{ path_binary }} start
 
-SyslogIdentifier=KrakenAgent{{ agent_context }}
+SyslogIdentifier=KrakenAgent{{ agent_context | capitalize }}
 
 [Service]
 {% for key, value in agent_env.items() %}

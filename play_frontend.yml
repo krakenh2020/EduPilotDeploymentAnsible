@@ -89,3 +89,7 @@
             try_files /vc4sm-frontend.html =404;
           }
 
+  - name: Upload KRAKEN mobile app 
+    ansible.builtin.copy:
+      src: ~/KRAKEN/dev/app-kraken_2021-10-18.apk
+      dest: "{{ frontend_path }}/dist/kraken.apk"

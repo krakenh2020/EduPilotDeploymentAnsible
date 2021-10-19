@@ -21,7 +21,8 @@ api_domain: "kraken-edu-api.{{ nginx_zone }}"
 agent_sidetree: "http://sidetree-mock.demo:48326/sidetree/0.0.1/identifiers"
 
 agent_path: "/opt/aries-agent"
-agent_version: "v0.1.6"
+#agent_version: "v0.1.6"
+agent_version: "51105753237576b60d9a9a38ca9bdeff160cbb97"
 agent_path_agent: "{{ agent_path }}/build/bin/aries-agent-rest"
 agent_path_webhook: "{{ agent_path }}/build/bin/webhook-server"
 

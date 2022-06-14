@@ -17,12 +17,9 @@ frontend_domain: "kraken-edu.{{ nginx_zone }}"
 api_path: "/opt/kraken-edu-api"
 api_domain: "kraken-edu-api.{{ nginx_zone }}"
 
-
-agent_sidetree: "http://sidetree-mock.demo:48326/sidetree/0.0.1/identifiers"
-
 agent_path: "/opt/aries-agent"
 #agent_version: "v0.1.6"
-agent_version: "v0.1.7"
+agent_version: "v0.1.8"
 agent_path_agent: "{{ agent_path }}/build/bin/aries-agent-rest"
 agent_path_webhook: "{{ agent_path }}/build/bin/webhook-server"
 
@@ -38,7 +35,7 @@ agent_university_port_api: 9082
 agent_university_port_inbound: 9081
 agent_university_port_webhook: 8093
 
-# in prod, but this into a ansible vault: 
+# for prod, put this into an ansible vault: 
 agent_university_did_kid: "z6MkwZ9XcVLTNwkv8ELoxPu5q2dMkqLnE422ex69YMVX4hpr"
 agent_university_did: "did:key:{{ agent_university_did_kid }}"
 agent_university_did_x: "_hjLQG4OZMUagNFaKNvOkPTTzpKVWC2eKCdgN4QILM8"

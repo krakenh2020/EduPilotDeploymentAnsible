@@ -60,7 +60,7 @@
       ARIESD_DATABASE_TYPE: "leveldb"
       ARIESD_DATABASE_PREFIX: "kraken-{{ agent_context }}"
       ARIESD_DATABASE_TIMEOUT: "60"
-      ARIESD_HTTP_RESOLVER: "sidetree@{{ agent_sidetree }}"
+      ARIESD_HTTP_RESOLVER: "sidetree@{{ agent_sidetree }},ebsi@https://api.preprod.ebsi.eu/did-registry/v2/identifiers"
       # TLS disabled at agent, since this is done by nginx 
       # TLS_CERT_FILE: "{{ agent_student_workdir }}/fullchain.pem"
       # TLS_KEY_FILE: "{{ agent_student_workdir }}/privkey.pem"
@@ -89,7 +89,7 @@
       ARIESD_DATABASE_TYPE: "leveldb"
       ARIESD_DATABASE_PREFIX: "kraken-{{ agent_context }}"
       ARIESD_DATABASE_TIMEOUT: "60"
-      ARIESD_HTTP_RESOLVER: "sidetree@{{ agent_sidetree }}"
+      ARIESD_HTTP_RESOLVER: "sidetree@{{ agent_sidetree }},ebsi@https://api.preprod.ebsi.eu/did-registry/v2/identifiers"
       # TLS disabled at agent, since this is done by nginx 
       # TLS_CERT_FILE: "{{ agent_university_workdir }}/fullchain.pem"
       # TLS_KEY_FILE: "{{ agent_university_workdir }}/privkey.pem"

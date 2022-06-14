@@ -37,7 +37,6 @@ Use `ansible-playbook` to apply the following playbooks:
 * [API Platform (Backend)](https://github.com/krakenh2020/EduPilotBackend) [![Build, Deploy](https://github.com/krakenh2020/EduPilotBackend/actions/workflows/docker.yml/badge.svg)](https://github.com/krakenh2020/EduPilotBackend/actions/workflows/docker.yml)
   * [API Backend Implementation](https://github.com/krakenh2020/EduPilotBackendBundle)
 * [Hyperledger Aries Agent](https://github.com/hyperledger/aries-framework-go)
-* Sidetree: *TODO*
 
 
 ## Exposed Services

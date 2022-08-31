@@ -91,5 +91,5 @@
 
   - name: Upload KRAKEN mobile app 
     ansible.builtin.copy:
-      src: ~/KRAKEN/dev/app-kraken_2021-10-18.apk
+      src: ~/KRAKEN/dev/app-kraken_2022-08-31.apk
       dest: "{{ frontend_path }}/dist/kraken.apk"

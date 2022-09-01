@@ -1,0 +1,40 @@
+---
+
+
+- name: "Setup Edu Exporter"
+  hosts: servers
+  become: yes
+  tasks:
+
+  - name: install packages
+    apt: name={{item}} state=latest
+    with_items:
+      - tree         # Optional
+      - python3-pip
+      - python3-dev
+
+
+  - name: Pull Exporter repo
+    git:
+      repo: "https://github.com/krakenh2020/EduPilotExporter.git"
+      dest: "{{ exporter_path }}"
+      version: main
+      force: yes
+      update: yes
+
+
+  - name: install python modules 
+    pip:
+      requirements: "{{ exporter_path }}/requirements.txt"
+
+
+  - name: template systemd service config
+    template:
+      src: templates/kraken-exporter.service
+      dest: /etc/systemd/system/kraken-exporter.service
+      mode: "ug+rx"
+
+
+  - name: start systemd app service
+    systemd: daemon_reload=yes name=kraken-exporter.service state=restarted enabled=yes
+

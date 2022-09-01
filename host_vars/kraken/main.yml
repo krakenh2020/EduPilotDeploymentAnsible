@@ -40,3 +40,6 @@ agent_university_did_kid: "z6MkwZ9XcVLTNwkv8ELoxPu5q2dMkqLnE422ex69YMVX4hpr"
 agent_university_did: "did:key:{{ agent_university_did_kid }}"
 agent_university_did_x: "_hjLQG4OZMUagNFaKNvOkPTTzpKVWC2eKCdgN4QILM8"
 agent_university_did_d: "Rh4-MEIiWoC8clgA2mnT_CAjiSQ0OeO96BYI0mrcmYE"
+
+exporter_path: "/opt/kraken-edu-exporter"
+exporter_port: 5000

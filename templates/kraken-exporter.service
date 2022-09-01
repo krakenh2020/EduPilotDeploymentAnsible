@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn instance to serve KRAKEN exporter
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+WorkingDirectory={{ exporter_path }}
+ExecStart=/usr/local/bin/gunicorn --workers 1 --bind 127.0.0.1:{{ exporter_port }} app:app
+
+[Install]
+WantedBy=multi-user.target
+

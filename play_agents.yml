@@ -60,7 +60,8 @@
       ARIESD_DATABASE_TYPE: "leveldb"
       ARIESD_DATABASE_PREFIX: "data/kraken-{{ agent_context }}"
       ARIESD_DATABASE_TIMEOUT: "60"
-      ARIESD_HTTP_RESOLVER: "web@https://resolver.prod.ari-bip.eu/1.0/identifiers,elem@https://resolver.prod.ari-bip.eu/1.0/identifiers,ebsi@https://resolver.prod.ari-bip.eu/1.0/identifiers"
+      #ARIESD_HTTP_RESOLVER: "web@https://resolver.prod.ari-bip.eu/1.0/identifiers,elem@https://resolver.prod.ari-bip.eu/1.0/identifiers,ebsi@https://resolver.prod.ari-bip.eu/1.0/identifiers"
+      ARIESD_HTTP_RESOLVER: "ebsi@https://api.preprod.ebsi.eu/did-registry/v2/identifiers,web@https://resolver.prod.ari-bip.eu/1.0/identifiers,elem@https://resolver.prod.ari-bip.eu/1.0/identifiers"
       # TLS disabled at agent, since this is done by nginx 
       # TLS_CERT_FILE: "{{ agent_student_workdir }}/fullchain.pem"
       # TLS_KEY_FILE: "{{ agent_student_workdir }}/privkey.pem"
